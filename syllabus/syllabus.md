@@ -3,7 +3,7 @@ layout: course
 title: Biostats 270
 ---
 
-# Advanced Bayesian Computing - Spring 2022
+# Stochastic processes - Spring 2022
 
 ## Syllabus
 
