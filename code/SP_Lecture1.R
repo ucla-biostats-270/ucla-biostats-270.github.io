@@ -10,14 +10,14 @@ inverseCDF <- function (u,lambda) {
   return(-log(1-u)/lambda)
 }
 
-us <- runif(10000)
+us <- runif(n)
 thetas <- inverseCDF(us,lambda)
 
 hist(thetas)
 abline(v=mean(thetas),col="red",lwd=10)
 abline(v=1/5,lwd=3)
 
-qqplot(x=thetas, y=rexp(10000,rate=5))
+qqplot(x=thetas, y=rexp(n,rate=5))
 abline(a=0,b=1,col="red",lwd=3)
 
 ################################################################################
@@ -55,13 +55,13 @@ lines(sqrt(1/(5:2000)),col="red",lwd=3) # diminishing returns
 ################################################################################
 #
 ####
-####### rejection samplers for sine(0,pi)/2
+####### rejection samplers for sin(0,pi)/2
 ####
 #
 n <- 1000
 M <- 10 
 proposals <- runif(n,max=pi)
-envelope <- M/pi
+envelope <- M * 1/pi
 
 Us <- runif(n)
 acceptances <- Us < (sin(proposals)/2)/envelope
