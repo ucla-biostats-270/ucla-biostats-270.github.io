@@ -255,11 +255,18 @@ p
 sum(p) # sanity check
 p == p %*% Q 
 
+# left eigen decomposition
 eig.obj <- eigen(t(Q))
 eig.obj$values # hard to read
 Mod(eig.obj$values)
-
 - eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
+colSums(- eig.obj$vectors * sqrt(sum(p^2)))
+
+# right eigen decomposition
+eig.obj <- eigen(Q)
+eig.obj$values # hard to read
+Mod(eig.obj$values)
+- eig.obj$vectors * sqrt(5) # r scales to norm 1
 
 
 # actually simulate from the markov chain 
@@ -279,8 +286,42 @@ p*n # stationary probabilities * iterations
 # get true mean
 sum(p*c(1,2,3)^2)
 
-# so, what's the point?
+#
+### Detailed balance
+#
+m <- 2
+p <- c(m,1,1,1,m)/(2*m+3)
+Q <- matrix(c(1-1/(2*m),1/2,0,0,0,
+              1/(2*m),0,1/2,0,0,
+              0,1/2,0,1/2,0,
+              0,0,1/2,0,1/(2*m),
+              0,0,0,1/2,1-1/(2*m)),
+            5,5)
+mc <- new('markovchain',
+          transitionMatrix = Q, 
+          states = c('A','B','C','D','E'))
+plot(mc)
 
+p[1]*Q[1,2] == p[2]*Q[2,1]
+p[3]*Q[3,4] == p[4]*Q[4,3]
+
+# left eigen decomposition
+eig.obj <- eigen(t(Q))
+eig.obj$values # hard to read
+Mod(eig.obj$values)
+- eig.obj$vectors * sqrt(sum(p^2))
+colSums(- eig.obj$vectors * sqrt(sum(p^2)))
+
+# right eigen decomposition
+eig.obj <- eigen(Q)
+eig.obj$values # hard to read
+Mod(eig.obj$values)
+- eig.obj$vectors * sqrt(5) # r scales to norm 1
+
+p%*%Q == p
+
+# so, what's the point?
+  
 ################################################################################
 #
 ####
