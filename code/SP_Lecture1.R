@@ -186,6 +186,7 @@ dim(thetas)
 unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,100))
 normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
 plot(normalizedWeights)
+plot(log(normalizedWeights))
 plot(density(normalizedWeights))
 summary(normalizedWeights) # underflow
 
@@ -206,7 +207,7 @@ estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
 plot(density(estimate))
 
 # higher dim = 200 / overpower with 10000 samples
-thetas <- rmvnorm(n=10000,sigma = diag(200),mean = rep(1,200))
+thetas <- rmvnorm(n=10000,sigma = diag(2000),mean = rep(1,2000))
 dim(thetas)
 
 unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,200))
@@ -255,19 +256,13 @@ p
 sum(p) # sanity check
 p == p %*% Q 
 
-# left eigen decomposition
-eig.obj <- eigen(t(Q))
-eig.obj$values # hard to read
-Mod(eig.obj$values)
-- eig.obj$vectors * sqrt(sum(p^2)) # r scales to norm 1
-colSums(- eig.obj$vectors * sqrt(sum(p^2)))
-
-# right eigen decomposition
+# left eigen vectors
 eig.obj <- eigen(Q)
 eig.obj$values # hard to read
 Mod(eig.obj$values)
-- eig.obj$vectors * sqrt(5) # r scales to norm 1
-
+eig.vecs <- - eig.obj$vectors * sqrt(3) # r scales to norm 1
+left.eig.vecs <- solve(eig.vecs)
+rowSums(left.eig.vecs)
 
 # actually simulate from the markov chain 
 n <- 10000
@@ -305,17 +300,16 @@ plot(mc)
 p[1]*Q[1,2] == p[2]*Q[2,1]
 p[3]*Q[3,4] == p[4]*Q[4,3]
 
-# left eigen decomposition
+# left eigen vectors
 eig.obj <- eigen(t(Q))
 eig.obj$values # hard to read
 Mod(eig.obj$values)
 - eig.obj$vectors * sqrt(sum(p^2))
 colSums(- eig.obj$vectors * sqrt(sum(p^2)))
 
-# right eigen decomposition
+# right eigen vectors
 eig.obj <- eigen(Q)
-eig.obj$values # hard to read
-Mod(eig.obj$values)
+eig.obj$values 
 - eig.obj$vectors * sqrt(5) # r scales to norm 1
 
 p%*%Q == p
