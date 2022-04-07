@@ -287,3 +287,83 @@ gg3
 
 ggsave("~/Desktop/ouEulerMaruyama.png",grid.arrange(gg,gg2,gg3,ncol=3),width=12,height=3)
 
+#
+###
+####### Langevin Monte Carlo
+###
+#
+library(ggplot2)
+
+# gaussian target
+gradLogPi <- function(theta) {
+  return(-theta)
+}
+
+h <- 1/10
+length <- 1000
+vals <- rep(0,(length/h)+1)
+for(i in 1:(length/h)) {
+  vals[i+1] <- vals[i] + h*gradLogPi(vals[i]) + sqrt(2*h)*rnorm(1)
+}
+hist(vals)
+qqnorm(vals)
+qqline(vals,col="red")
+
+
+# Langevin Monte Carlo
+LMC <- function(h=1/10,timeLength=1000,D=1,initialPos=0) {
+  if(D==1) {
+    vals <- rep(0,(timeLength/h)+1)
+    vals[1] <- initialPos
+    for(i in 1:(timeLength/h)) {
+      vals[i+1] <- vals[i] + h*gradLogPi(vals[i]) + sqrt(2*h)*rnorm(1)
+    }
+  } else {
+    vals <- matrix(0,(timeLength/h)+1,2)
+    vals[1,] <- initialPos
+    for(i in 1:(timeLength/h)) {
+      vals[i+1,] <- vals[i,] + h*gradLogPi(vals[i,]) + sqrt(2*h)*rnorm(D)
+    }
+  }
+  return(vals)
+}
+
+# spherical 2D target
+vals <- LMC(h=1/10,timeLength=1000,D=2,initialPos = 100)
+colnames(vals) <- c("X","Y")
+vals <- as.data.frame(vals)
+gg <- ggplot(vals[1:100,],aes(x=X,y=Y)) +
+  geom_path() +theme_bw()
+gg
+gg2 <- ggplot(vals,aes(x=X,y=Y)) +
+  geom_path() + geom_density_2d() + theme_bw()
+gg2
+
+# spherical 2D target
+vals <- LMC(h=1/10,timeLength=10000,D=2,initialPos = 1)
+colnames(vals) <- c("X","Y")
+vals <- as.data.frame(vals)
+gg <- ggplot(vals[1:100,],aes(x=X,y=Y)) +
+  geom_path() +theme_bw()
+gg
+gg2 <- ggplot(vals,aes(x=X,y=Y)) +
+  geom_path() + geom_density_2d() +theme_bw()
+gg2
+
+# correlated 2D target
+gradLogPi <- function(theta) {
+  Rinv <- matrix(c(2.78,-2.22,-2.22,2.78),2,2)
+  return(-Rinv%*%theta)
+}
+vals <- LMC(h=1/10,timeLength=10000,D=2,initialPos = 1)
+colnames(vals) <- c("X","Y")
+vals <- as.data.frame(vals)
+gg <- ggplot(vals[1:100,],aes(x=X,y=Y)) +
+  geom_path() +theme_bw() + ggtitle("100 steps: h=0.1, time=10")
+gg
+gg2 <- ggplot(vals,aes(x=X,y=Y)) +
+  geom_path() + geom_density_2d() +theme_bw() + ggtitle("100k steps: h=0.1, time=10k")
+gg2
+
+ggsave("~/Desktop/LMC.png",gridExtra::grid.arrange(gg,gg2,ncol=2),width=12,height=4)
+

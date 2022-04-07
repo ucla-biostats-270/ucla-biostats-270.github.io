@@ -256,7 +256,7 @@ p
 sum(p) # sanity check
 p == p %*% Q 
 
-# left eigen vectors
+# eigen vectors
 eig.obj <- eigen(Q)
 eig.obj$values # hard to read
 Mod(eig.obj$values)
@@ -284,6 +284,7 @@ sum(p*c(1,2,3)^2)
 #
 ### Detailed balance
 #
+library(markovchain)
 m <- 2
 p <- c(m,1,1,1,m)/(2*m+3)
 Q <- matrix(c(1-1/(2*m),1/2,0,0,0,
@@ -300,17 +301,11 @@ plot(mc)
 p[1]*Q[1,2] == p[2]*Q[2,1]
 p[3]*Q[3,4] == p[4]*Q[4,3]
 
-# left eigen vectors
-eig.obj <- eigen(t(Q))
-eig.obj$values # hard to read
-Mod(eig.obj$values)
-- eig.obj$vectors * sqrt(sum(p^2))
-colSums(- eig.obj$vectors * sqrt(sum(p^2)))
-
-# right eigen vectors
 eig.obj <- eigen(Q)
 eig.obj$values 
-- eig.obj$vectors * sqrt(5) # r scales to norm 1
+eig.vecs <- - eig.obj$vectors * sqrt(5) # r scales to norm 1
+left.eig.vecs <- solve(eig.vecs)
+rowSums(left.eig.vecs)
 
 p%*%Q == p
 
