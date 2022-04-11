@@ -376,7 +376,7 @@ plot(density(results[,1]))
 
 results <- metropolis(100000, D)
 plot(results[,1],type="l")
-plot(density(results[,1]))
+plot(density(results[100000,1]))
 
 D <- 100 # curse of dimensionality
 results <- metropolis(10000, D)
@@ -484,6 +484,7 @@ hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 
 D <- 100 # curse of dimensionality
+plot(results[,1],type="l")
 results <- metropolis_hastings(10000, 20)
 hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
