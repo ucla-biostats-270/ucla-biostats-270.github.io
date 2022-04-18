@@ -82,6 +82,38 @@ gg <- ggplot(data=df5,aes(x=Time,y=Displacement)) +
 gg
 
 
+
+
+#
+####
+####### reflection principle
+####
+#
+set.seed(2)
+n=10000
+kicks <- rnorm(n=n)
+kicks <- c(0,kicks)
+bm    <- cumsum(kicks)
+df5 <- data.frame(Displacement=bm,Time = (0:n)/(n+1))
+
+# reflected brownian motion
+bmr <- c(bm[1:2500] , 2*bm[2501]-bm[2501:10001])
+df6 <- data.frame(Displacement=bmr,Time = (0:n)/(n+1))
+
+df <- rbind(df5,df6)
+df$Reflected <- c(rep(c("original","reflection"),each=10001))
+df$Reflected <- factor(df$Reflected)
+df$` ` <- relevel(df$Reflected,ref = "reflection")
+
+gg <- ggplot(data=df,aes(x=Time,y=Displacement,color=` `))  +
+  geom_hline(yintercept = bm[2501]) +
+  geom_line() + theme_bw() 
+gg
+
+
+ggsave("reflectionPrinciple.png",height=3,width = 5)
+
+
 #
 ####
 ####### Prob max > 10 at time t

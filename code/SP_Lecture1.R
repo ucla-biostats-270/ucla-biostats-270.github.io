@@ -353,7 +353,7 @@ metropolis <- function(maxIts,D) {
   chain[1,] <- - 10 # bad idea for a starting value
   
   for(s in 2:maxIts) {
-    thetaStar <- rnorm(n=D,mean=chain[s-1,]) # proposal
+    thetaStar <- sqrt(2.38/D)*rnorm(n=D,mean=chain[s-1,]) # proposal
     u         <- runif(1)
     
     logA      <- target(thetaStar) - target(chain[s-1,]) # target on log scale
@@ -376,9 +376,9 @@ plot(density(results[,1]))
 
 results <- metropolis(100000, D)
 plot(results[,1],type="l")
-plot(density(results[100000,1]))
+plot(density(results[1000:100000,1]))
 
-D <- 100 # curse of dimensionality
+D <- 500 # curse of dimensionality
 results <- metropolis(10000, D)
 plot(results[,1],type="l")
 plot(density(results[,1]))  # how to choose proposal variance?
