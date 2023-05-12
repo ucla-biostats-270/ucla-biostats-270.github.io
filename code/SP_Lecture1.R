@@ -179,16 +179,17 @@ x <- rnorm(600)
 pdfs <- dnorm(x)
 joint_pdf <- prod(pdfs)
 
+D <- 100
 # ratios of small numbers do not behave well
-thetas <- rmvnorm(n=1000,sigma = diag(100),mean = rep(1,100))
+thetas <- rmvnorm(n=1000,sigma = diag(D),mean = rep(1,D))
 dim(thetas)
 
-unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,100))
+unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,D),sigma = diag(D))
 normalizedWeights <- unnormalizedWeights / sum(unnormalizedWeights)
 plot(normalizedWeights)
 plot(log(normalizedWeights))
 plot(density(normalizedWeights))
-summary(normalizedWeights) # underflow
+summary(normalizedWeights) 
 
 estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
 plot(density(estimate))
@@ -207,7 +208,7 @@ estimate <- colSums(thetas * normalizedWeights) # compute mean of t normals (0)
 plot(density(estimate))
 
 # higher dim = 200 / overpower with 10000 samples
-thetas <- rmvnorm(n=10000,sigma = diag(2000),mean = rep(1,2000))
+thetas <- rmvnorm(n=10000,sigma = diag(200),mean = rep(1,200))
 dim(thetas)
 
 unnormalizedWeights <-  dmvnorm(thetas)/dmvnorm(thetas,mean = rep(1,200))
@@ -344,7 +345,7 @@ for(s in 2:maxIts) {
 }
 
 plot(chain[,1],type="l") # not bad mixing
-plot(density(chain[,1])) # meh
+plot(density(chain[101:1000,1])) # meh
 
 # make function and try with different maxIts
 
@@ -371,16 +372,16 @@ metropolis <- function(maxIts,D) {
 
 results <- metropolis(10000, D)
 plot(results[,1],type="l")
-plot(density(results[,1]))
+plot(density(results[1001:10000,1]))
 
 
 results <- metropolis(100000, D)
 plot(results[,1],type="l")
 plot(density(results[1000:100000,1]))
 
-D <- 500 # curse of dimensionality
+D <- 200 # curse of dimensionality
 results <- metropolis(10000, D)
-plot(results[,1],type="l")
+plot(results[,2],type="l")
 plot(density(results[,1]))  # how to choose proposal variance?
 
 
@@ -483,9 +484,9 @@ plot(results[,1],type="l")
 hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 
-D <- 100 # curse of dimensionality
-plot(results[,1],type="l")
+D <- 20 # curse of dimensionality
 results <- metropolis_hastings(10000, 20)
+plot(results[,1],type="l")
 hist(results[,1],freq = FALSE,breaks = 20)
 lines(x=x,y=truncnorm::dtruncnorm(x,a=0),col="red",lwd=3)
 
