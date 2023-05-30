@@ -113,7 +113,7 @@ points(n.t, x[-length(x)], pch = 1)
 
 rate <- function(t,mu,a,b,preceding=NULL,arePreceding=TRUE) {
   if(arePreceding) {
-    out <- mu + a*sum(exp(-b*(t-preceding)))
+    out <- mu + a/sum((0.0000001+(t-preceding)))#a*sum(exp(-b*(t-preceding)))
   } else {
     out <- mu
   }
@@ -121,8 +121,8 @@ rate <- function(t,mu,a,b,preceding=NULL,arePreceding=TRUE) {
 }
 
 mu <- 0.1 # background rate
-a  <- 2 # self-exciting rate coefficient
-b  <- 4 # exponential lengthscale
+a  <- 1 # self-exciting rate coefficient
+b  <- 2 # exponential lengthscale
 epsilon <- 1E-6
 endTime <- 100
 t <- 0
@@ -136,7 +136,7 @@ while (t<endTime) {
   u <- runif(1)
   ratio <- rate(t=t, mu=mu, a=a, b=b,
                 preceding = events, arePreceding = arePreceding) / upBound
-  if (u<ratio) {
+  if (u<ratio & t< 100) {
     events       <- c(events,t)
     arePreceding <- TRUE
   }
@@ -145,7 +145,8 @@ while (t<endTime) {
 n.t <- events
 x   <- 0:length(n.t)
 plot(stepfun(n.t, x), xlab="t", ylab="N",
-     do.points = TRUE,pch = 16,col.points = "blue",verticals = FALSE)
+     do.points = TRUE,pch = 16,col.points = "blue",verticals = FALSE,
+     xlim=c(0,100))
 points(n.t, x[-length(x)], pch = 1)
 
 
@@ -192,4 +193,52 @@ plot(stepfun(n.t, x), xlab="t", ylab="N",
 points(n.t, x[-length(x)], pch = 1)
 
 
+#
+####
+######## spatiotemporal HP with cluster algorithm
+####
+#
 
+# t less than 100
+# space is 100 by 100 square
+# background is homogeneous
+
+mu <- 0.1 # background rate
+a  <- 2 # self-exciting rate coefficient
+b  <- 3 # exponential lengthscale
+endTime <- 100
+t <- 0
+
+backgroundEvents <- matrix(0,nrow=0,ncol=3)
+while(t<endTime) {
+  t <- t + rexp(n=1,rate=mu)
+  vnt <- c(t,100*runif(2))
+  if(t < 100)   backgroundEvents <- rbind(backgroundEvents,vnt)
+  
+}
+backgroundEvents
+events     <- backgroundEvents
+currentGen <- backgroundEvents
+
+while(length(currentGen)>0) {
+  
+  nextGen    <- matrix(0,nrow=0,ncol=3)
+  for(k in 1:length(currentGen[,1])) {
+    nChilds <- rpois(n=1,lambda=a/b)
+    if (nChilds>0) {
+      childs <- currentGen[k,1] + rexp(n=nChilds,rate=b)
+      vnt    <- cbind(childs,matrix(rnorm(2*length(childs))+currentGen[k,2:3],length(childs),2))
+      nextGen <- rbind(nextGen,vnt)
+    }
+  }
+  currentGen <- nextGen
+  events <- rbind(events,currentGen)
+  
+}
+events <- events[order(events[,1]),]
+colnames(events) <- c("t","x","y")
+rownames(events) <- NULL
+
+for(i in 1:(dim(events)[1])){
+  plot(events[1:i,2],events[1:i,3],xlim=c(0,100),ylim=c(0,100))
+}
