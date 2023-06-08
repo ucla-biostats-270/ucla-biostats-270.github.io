@@ -204,7 +204,7 @@ points(n.t, x[-length(x)], pch = 1)
 # background is homogeneous
 
 mu <- 0.1 # background rate
-a  <- 2 # self-exciting rate coefficient
+a  <- 2.5 # self-exciting rate coefficient
 b  <- 3 # exponential lengthscale
 endTime <- 100
 t <- 0
