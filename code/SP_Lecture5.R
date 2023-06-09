@@ -58,7 +58,7 @@ Y
 n <- 100
 x <- 1:n
 X <- matrix(x,n,n)
-L <- 0.1*exp(-(X-t(X))^2/(4^2*2)) + 0.000001*diag(n)
+L <- 5*exp(-(X-t(X))^2/(1^2*2))
 
 eig.obj <- eigen(L)
 vecs    <- eig.obj$vectors # columns are eigenvectors
@@ -100,9 +100,9 @@ while (ncolV>0) {
   ncolV <- ncolV - 1
 }
 states
-Y <- sort(Y)
+#Y <- sort(Y)
 Y
-plot(Y)
+plot(Y,ylim = c(0,101))
 
 
 #
@@ -117,7 +117,7 @@ n <- N^2
 L <- matrix(0,n,n)
 for (i in 1:(n)) {
   for(j in i:(n)) {
-    L[i,j] <- 0.05*exp(-sum((x[i,]-x[j,])^2)/(10^2*2)) + 0.00000001
+    L[i,j] <- 1*exp(-sum((x[i,]-x[j,])^2)/(20^2*2))
   }
 }
 L <- 0.5*(L + t(L))
@@ -162,7 +162,11 @@ while (ncolV>0) {
   ncolV <- ncolV - 1
 }
 states
-Y <- sort(Y)
+#Y <- sort(Y)
 Y
 
-plot(x[Y,],xlim=c(1,N),ylim=c(1,N))
+# low fi movie
+for(i in 1:length(Y)) {
+  Sys.sleep(1)
+  plot(x[Y[1:i],],xlim=c(1,N),ylim=c(1,N))
+}

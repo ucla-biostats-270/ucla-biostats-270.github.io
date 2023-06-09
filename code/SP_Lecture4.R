@@ -203,7 +203,7 @@ points(n.t, x[-length(x)], pch = 1)
 # space is 100 by 100 square
 # background is homogeneous
 
-mu <- 0.1 # background rate
+mu <- 1 # background rate
 a  <- 2.5 # self-exciting rate coefficient
 b  <- 3 # exponential lengthscale
 endTime <- 100
@@ -239,6 +239,10 @@ events <- events[order(events[,1]),]
 colnames(events) <- c("t","x","y")
 rownames(events) <- NULL
 
+plot(NULL,xlim=c(0,100),ylim=c(0,100))
+currentTime <- 0
 for(i in 1:(dim(events)[1])){
+  Sys.sleep((events[i,1]-currentTime)/10)
+  currentTime <- events[i,1]/10
   plot(events[1:i,2],events[1:i,3],xlim=c(0,100),ylim=c(0,100))
 }
